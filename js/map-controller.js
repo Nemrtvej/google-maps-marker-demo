@@ -135,8 +135,7 @@ MapController.prototype.recalculatGroupedPoints = function() {
         for (var j = 0; j < this.gridSquares.length; j++) {
             var currentSquare = this.gridSquares[j];
 
-            if (currentSquare.containsPoint(simplePoint)) {
-                currentSquare.addPoint();
+            if (currentSquare.addPoint(simplePoint)) {
                 return;
             }
         }

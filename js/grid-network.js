@@ -15,7 +15,7 @@ var GridSquare = function(pointA, pointD) {
     this.pointA = pointA;
     this.pointD = pointD;
 
-    this.pointsInSquare = 0;
+    this.pointsInSquare = [];
 };
 
 GridSquare.prototype.getGooglePath = function() {
@@ -33,15 +33,21 @@ GridSquare.prototype.getGooglePath = function() {
     return corners;
 };
 
-GridSquare.prototype.addPoint = function() {
-    this.pointsInSquare++;
+GridSquare.prototype.addPoint = function(point) {
+    if (!this._containsPoint(point)) {
+        return false;
+    }
+
+    this.pointsInSquare.push(point);
+
+    return true;
 };
 
 GridSquare.prototype.getPointsInSquare = function() {
-    return this.pointsInSquare;
+    return this.pointsInSquare.length;
 };
 
-GridSquare.prototype.containsPoint = function(point) {
+GridSquare.prototype._containsPoint = function(point) {
     var betweenLatitudes = (point.getLatitude() >= this.pointA.getLatitude()) && (point.getLatitude() < this.pointD.getLatitude());
     var betweenLongitudes = (point.getLongitude() >= this.pointA.getLongitude()) && (point.getLongitude() < this.pointD.getLongitude());
 
@@ -52,7 +58,30 @@ GridSquare.prototype.getCenterPoint = function() {
     var medianLatitude = (this.pointA.getLatitude() + this.pointD.getLatitude()) / 2;
     var medianLongitude = (this.pointA.getLongitude() + this.pointD.getLongitude()) / 2;
 
-    return new SimplePoint(medianLatitude, medianLongitude);
+    var centerPoint = new SimplePoint(medianLatitude, medianLongitude);
+    var randomPoint = generatePoint(this.pointA.getLatitude(), this.pointD.getLatitude(), this.pointA.getLongitude(), this.pointD.getLongitude());
+
+
+    var pointsForCalculation = [];
+    pointsForCalculation.push(centerPoint);
+    pointsForCalculation.push(randomPoint);
+    this.pointsInSquare.map(function(pointInSquare) {
+        pointsForCalculation.push(pointInSquare);
+    });
+
+    return this._calculateCenterPoint(pointsForCalculation);
+};
+
+GridSquare.prototype._calculateCenterPoint = function(points) {
+    var latitude = 0;
+    var longitude = 0;
+
+    points.map(function(point) {
+        latitude += point.getLatitude();
+        longitude += point.getLongitude();
+    });
+
+    return new SimplePoint(latitude / points.length, longitude / points.length);
 };
 
 
