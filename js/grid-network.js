@@ -59,7 +59,9 @@ GridSquare.prototype.getCenterPoint = function() {
     var medianLongitude = (this.pointA.getLongitude() + this.pointD.getLongitude()) / 2;
 
     var centerPoint = new SimplePoint(medianLatitude, medianLongitude);
-    var randomPoint = generatePoint(this.pointA.getLatitude(), this.pointD.getLatitude(), this.pointA.getLongitude(), this.pointD.getLongitude());
+    var firstPoint = centerPoint;
+    var secondPoint = this._getRandomPoint();
+    var randomPoint = generatePoint(firstPoint.getLatitude(), secondPoint.getLatitude(), firstPoint.getLongitude(), secondPoint.getLongitude());
 
 
     var pointsForCalculation = [];
@@ -82,6 +84,16 @@ GridSquare.prototype._calculateCenterPoint = function(points) {
     });
 
     return new SimplePoint(latitude / points.length, longitude / points.length);
+};
+
+GridSquare.prototype._getRandomPoint = function() {
+    if (this.pointsInSquare.length === 0) {
+        return null;
+    }
+
+    var index = parseInt(randomNumber(0, this.pointsInSquare.length));
+
+    return this.pointsInSquare[index];
 };
 
 

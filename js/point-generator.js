@@ -23,6 +23,12 @@ SimplePoint.prototype.toGmap = function() {
 };
 
 function randomNumber(min, max) {
+    if (min > max) {
+        var helper = max;
+        max = min;
+        min = helper;
+    }
+
     return (Math.random() * (max - min) + min).toFixed(8);
 }
 
