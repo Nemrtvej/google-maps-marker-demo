@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>GMaps test</title>
+        <style>
+            #map {
+                width: 100%;
+                height: 800px;
+            }
+
+            #controls {
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div id="map"></div>
+
+        <div id="controls">
+            <fieldset>
+                <legend>Markers</legend>
+                <button id="showMarkers">Show</button>
+                <button id="hideMarkers">Hide</button>
+            </fieldset>
+
+            <fieldset>
+                <legend>GroupedMarkers</legend>
+                <button id="showGroupedMarkers">Show</button>
+                <button id="hideGroupedMarkers">Hide</button>
+            </fieldset>
+
+            <fieldset>
+                <legend>Lines</legend>
+                <label>Size <input type="text" name="size" id="lineSize" value="5"></label>
+                <button id="setSize">Set size</button><br><br>
+                <button id="showLines">Show</button>
+                <button id="hideLines">Hide</button>
+            </fieldset>
+        </div>
+
+
+        <div id="points"></div>
+        <script type="text/javascript" src="/js/point-generator.js"></script>
+        <script type="text/javascript" src="/js/map-controller.js"></script>
+        <script type="text/javascript" src="/js/grid-network.js"></script>
+
+        <script type="text/javascript">
+            var gridNetworkFactory = new GridNetworkFactory();
+            var mapController = new MapController('map', gridNetworkFactory);
+
+
+/*
+            var pointA = new SimplePoint(1, 1);
+            var pointD = new SimplePoint(5, 5);
+
+            var testPoint1 = new SimplePoint(3, 3);
+            var testPoint2 = new SimplePoint(8, 8);
+
+            var square = new GridSquare(pointA, pointD);
+
+            console.log(square.containsPoint(testPoint1));
+            console.log(square.containsPoint(testPoint2));
+*/
+
+            var onMapLoad = function() {
+                this.initMap();
+                this.populateWithPoints('/resources/points.csv').then(function() {
+                    mapController.setSize(5);
+                    mapController.hideMarkers();
+                    mapController.hideLines();
+                });
+            }.bind(mapController);
+
+            document.querySelector('#showMarkers').addEventListener('click', function() {
+                mapController.showMarkers();
+            });
+
+            document.querySelector('#hideMarkers').addEventListener('click', function() {
+                mapController.hideMarkers();
+            });
+
+            document.querySelector('#hideGroupedMarkers').addEventListener('click', function() {
+                mapController.hideGroupedMarkers();
+            });
+
+            document.querySelector('#showGroupedMarkers').addEventListener('click', function() {
+                mapController.showGroupedMarkers();
+            });
+
+            document.querySelector('#showLines').addEventListener('click', function() {
+                mapController.showLines();
+            });
+
+            document.querySelector('#hideLines').addEventListener('click', function() {
+                mapController.hideLines();
+            });
+
+            document.querySelector('#setSize').addEventListener('click', function() {
+                var size = parseFloat(document.querySelector('#lineSize').value);
+                mapController.setSize(size);
+            });
+        </script>
+        <script>
+            fetch('/apikey.txt').then(function(response){
+                return response.text();
+            }).then(function (content) {
+                var url = 'https://maps.googleapis.com/maps/api/js?key='+content+'&callback=onMapLoad';
+                var element = document.createElement('script');
+                element.setAttribute('src', url);
+                element.async = true;
+                element.defer = true;
+
+                document.body.appendChild(element);
+            });
+        </script>
+    </body>
+</html>
